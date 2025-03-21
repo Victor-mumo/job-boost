@@ -13,8 +13,16 @@ interface ResumePreviewPanelProps {
 }
 
 export default function ResumePreviewPanel({ resumeData, isLoggedIn, handleDownload }: ResumePreviewPanelProps) {
-  // Default to the first template for now
-  const defaultTemplate = resumeTemplates[0];
+  // Default to the first template for now, with a fallback
+  const defaultTemplate = resumeTemplates?.[0] ?? {
+    id: "default",
+    name: "Default Template",
+    description: "A clean and professional template",
+    thumbnail: "",
+    category: "Professional",
+    requiresPhoto: false,
+    tags: ["professional", "clean"]
+  };
 
   return (
     <div className="lg:col-span-5 flex flex-col gap-6">
