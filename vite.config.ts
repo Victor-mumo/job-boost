@@ -43,6 +43,19 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [],
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': [
+            '@radix-ui/react-radio-group',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-switch',
+            'embla-carousel-react',
+            'next-themes',
+            'sonner'
+          ]
+        }
+      }
     }
   }
 });
