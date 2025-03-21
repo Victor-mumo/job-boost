@@ -10,6 +10,8 @@ export interface AIContextType {
   messages: Message[];
   sendMessage: (message: string) => Promise<void>;
   clearChat: () => void;
+  enhanceResumeSummary: (text: string) => Promise<string>;
+  isLoading: boolean;
 }
 
 // Create context with undefined initial value

@@ -5,6 +5,7 @@ import { AIContext, Message } from './context';
 export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize Hugging Face client with API key
   const hf = new HfInference(import.meta.env.VITE_HUGGINGFACE_API_KEY);
@@ -35,7 +36,7 @@ export const AIProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       // Call Hugging Face API with conversation context
       const response = await hf.textGeneration({
         model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
-        inputs: `<system>You are JobBoostAI, a professional career advisor and job search expert. Your purpose is to help users with their career development, job search, and professional growth. You provide detailed, practical advice for resumes, interviews, career planning, and job search strategies. Always be clear, professional, and actionable in your responses.</system>
+        inputs: `<s>You are JobBoostAI, a professional career advisor and job search expert. Your purpose is to help users with their career development, job search, and professional growth. You provide detailed, practical advice for resumes, interviews, career planning, and job search strategies. Always be clear, professional, and actionable in your responses.<s>
 
 <context>Previous conversation:
 ${conversationHistory}</context>
@@ -50,14 +51,14 @@ ${conversationHistory}</context>
           temperature: 0.7,
           top_p: 0.95,
           repetition_penalty: 1.15,
-          stop: ["<human>", "<system>", "<instruction>"],
+          stop: ["<human>", "<s>", "<instruction>"],
         },
       });
 
       // Clean up the response text
       let cleanedResponse = response.generated_text;
       // Remove any system prompts or instructions that might have been generated
-      cleanedResponse = cleanedResponse.replace(/<system>.*?<\/system>/s, '');
+      cleanedResponse = cleanedResponse.replace(/<s>.*?<\/system>/s, '');
       cleanedResponse = cleanedResponse.replace(/<instruction>.*?<\/instruction>/s, '');
       cleanedResponse = cleanedResponse.replace(/<context>.*?<\/context>/s, '');
       cleanedResponse = cleanedResponse.replace(/<human>.*?<\/human>/s, '');
@@ -78,12 +79,52 @@ ${conversationHistory}</context>
     }
   };
 
+  const enhanceResumeSummary = async (text: string): Promise<string> => {
+    if (!import.meta.env.VITE_HUGGINGFACE_API_KEY) {
+      throw new Error('Hugging Face API key is not configured');
+    }
+
+    try {
+      setIsLoading(true);
+
+      const response = await hf.textGeneration({
+        model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+        inputs: `<s>You are JobBoostAI, an expert in resume analysis and enhancement. Your task is to analyze resume content and extract structured information.</s>
+
+<instruction>${text}</instruction>
+
+<assistant>I'll analyze the resume content and provide the requested information in a structured format.</assistant>`,
+        parameters: {
+          max_new_tokens: 2048,
+          temperature: 0.3,
+          top_p: 0.95,
+          repetition_penalty: 1.15,
+          stop: ["<human>", "<s>", "<instruction>"],
+        },
+      });
+
+      // Clean up the response text
+      let cleanedResponse = response.generated_text;
+      cleanedResponse = cleanedResponse.replace(/<s>.*?<\/s>/s, '');
+      cleanedResponse = cleanedResponse.replace(/<instruction>.*?<\/instruction>/s, '');
+      cleanedResponse = cleanedResponse.replace(/<assistant>.*?<\/assistant>/s, '');
+      cleanedResponse = cleanedResponse.trim();
+
+      return cleanedResponse;
+    } catch (error) {
+      console.error('Error enhancing resume:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const clearChat = () => {
     setMessages([]);
   };
 
   return (
-    <AIContext.Provider value={{ isProcessing, messages, sendMessage, clearChat }}>
+    <AIContext.Provider value={{ isProcessing, messages, sendMessage, clearChat, enhanceResumeSummary, isLoading }}>
       {children}
     </AIContext.Provider>
   );
