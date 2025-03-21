@@ -1,17 +1,21 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Check, DownloadCloud, Lock } from "lucide-react";
 import ResumePreview from "./ResumePreview";
+import { UserResumeData } from "@/types/resume";
+import resumeTemplates from "@/data/resumeTemplates";
 
 interface ResumePreviewPanelProps {
-  resumeData: any;
+  resumeData: UserResumeData;
   isLoggedIn: boolean;
   handleDownload: () => void;
 }
 
 export default function ResumePreviewPanel({ resumeData, isLoggedIn, handleDownload }: ResumePreviewPanelProps) {
+  // Default to the first template for now
+  const defaultTemplate = resumeTemplates[0];
+
   return (
     <div className="lg:col-span-5 flex flex-col gap-6">
       <div className="sticky top-20">
@@ -31,7 +35,7 @@ export default function ResumePreviewPanel({ resumeData, isLoggedIn, handleDownl
         
         <Card className="border border-muted">
           <ScrollArea className="h-[600px] w-full">
-            <ResumePreview resumeData={resumeData} />
+            <ResumePreview template={defaultTemplate} previewData={resumeData} />
           </ScrollArea>
         </Card>
         
