@@ -23,7 +23,17 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom']
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@radix-ui/react-radio-group',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-switch',
+      'embla-carousel-react',
+      'next-themes',
+      'sonner'
+    ]
   },
   build: {
     outDir: 'dist',
@@ -31,5 +41,8 @@ export default defineConfig({
     commonjsOptions: {
       include: [/node_modules/],
     },
+    rollupOptions: {
+      external: [],
+    }
   }
 });
