@@ -1,0 +1,11 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#f8fafc"/>
+  <g transform="translate(350,65) scale(1)">
+    <circle cx="250" cy="250" r="240" fill="#000000"/>
+    <path d="M250 50 L400 350 L100 350 Z" fill="#FFFFFF"/>
+    <circle cx="380" cy="120" r="30" fill="#FFD700"/>
+    <path d="M150 120 Q180 100 210 120" stroke="#FFD700" stroke-width="8" fill="none"/>
+    <rect x="100" y="350" width="300" height="60" rx="30" fill="#000000"/>
+    <text x="250" y="390" font-family="Arial Black" font-size="36" text-anchor="middle" fill="#FFFFFF">Job Boost</text>
+  </g>
+</svg> 
